@@ -40,3 +40,5 @@ class SpotifyWrapper:
 
             # add update the playlist
             crud.add_track_to_playlist(track_id, playlist_data["id"])
+
+        return playlist_data["name"]

@@ -1,5 +1,6 @@
 # main.py
 
+from cmath import e
 import dotenv
 
 from spotify_wrapper import SpotifyWrapper
@@ -7,27 +8,48 @@ from plex_wrapper import PlexWrapper
 from crud import create_db_tables
 
 dotenv.load_dotenv(dotenv.find_dotenv())
+create_db_tables()
+
+sp = SpotifyWrapper()
+px = PlexWrapper()
+
+
+def import_playlist():
+    global sp, px
+    playlist_url = input("URL for playlist to import: ")
+
+    # import playlist from spotify
+    playlist_name = sp.import_playlist(
+        playlist_url,
+    )
+    print(f"Importing {playlist_name} from Spotify...")
+
+    # check and see if artist and track is on plex, update in db
+    px.update_if_exists(playlist_name=playlist_name)
+
+    # calculate percentage of playlist in plex libarary
+    print(f"Calculating overlap of {playlist_name} with Plex Library...")
+    percentage = px.percentage_on_plex(playlist_name=playlist_name)
+    print(f"{round(percentage, 0)}%")
+
+
+def update():
+    global sp, px
+    pass
 
 
 def main():
-    create_db_tables()
-    sp = SpotifyWrapper()
-    px = PlexWrapper()
+    commands = {"1": import_playlist, "2": update, "3": quit}
 
-    # import playlist from spotify
-    sp.import_playlist(
-        "https://open.spotify.com/playlist/0d4WK4fZXWGWiNXTkxUIkI?si=8dfdf04239f4445c",
-    )
-
-    # check and see if artist and track is on plex, update in db
-    px.update_if_exists("Lazer Lemonade")
-
-    # calculate percentage of playlist in plex libarary
-    percentage = px.percentage_on_plex("Lazer Lemonade")
-    print(f"{round(percentage, 0)}%")
-
-    # artist = px.get_artist("Daft Punk")
-    # print(artist.albums())
+    print("Welcome to Spotify to Plex Playlist Manager")
+    while True:
+        command = input(
+            "What would you like to do?\n1: Import Playlist\n2: Update existing playlist\n3: Exit\nSelection: "
+        )
+        try:
+            commands[command]()
+        except KeyError:
+            print("\nBad input, try again\n")
 
 
 if __name__ == "__main__":
