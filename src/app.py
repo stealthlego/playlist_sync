@@ -22,15 +22,21 @@ def import_playlist():
     playlist_name = sp.import_playlist(
         playlist_url,
     )
-    print(f"Importing {playlist_name} from Spotify...")
 
-    # check and see if artist and track is on plex, update in db
-    px.update_if_exists(playlist_name=playlist_name)
+    if px.does_playlist_exist():
+        print("Playlist already exists in Plex, try updating instead")
+    else:
+        print(f"Importing {playlist_name} from Spotify...")
 
-    # calculate percentage of playlist in plex libarary
-    print(f"Calculating overlap of {playlist_name} with Plex Library...")
-    percentage = px.percentage_on_plex(playlist_name=playlist_name)
-    print(f"{round(percentage, 0)}%")
+        # check and see if artist and track is on plex, update in db
+        px_track_objs = px.update_if_exists(playlist_name=playlist_name)
+
+        # calculate percentage of playlist in plex libarary
+        print(f"Calculating overlap of {playlist_name} with Plex Library...")
+        percentage = px.percentage_on_plex(playlist_name=playlist_name)
+        print(f"{round(percentage, 0)}%")
+
+        px.create_playlist(playlist_name=playlist_name, tracks=px_track_objs)
 
 
 def update():

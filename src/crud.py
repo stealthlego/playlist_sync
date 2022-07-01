@@ -112,6 +112,14 @@ def get_playlist(playlist_name: str):
         return session.exec(statement).first()
 
 
+def get_artist(track_name: str):
+    with Session(engine) as session:
+        statement = select(Track).where(Track.name == track_name)
+        track = session.exec(statement).first()
+        artist = track.artist
+        return Artist
+
+
 def tracks_on_plex(playlist_name: str) -> int:
     with Session(engine) as session:
         statement = (
@@ -119,5 +127,4 @@ def tracks_on_plex(playlist_name: str) -> int:
             .where(Playlist.name == playlist_name)
             .where(Track.on_plex == True)
         )
-        tracks = session.exec(statement).fetchall()
-        return len(tracks)
+        return session.exec(statement).fetchall()
