@@ -1,6 +1,5 @@
 # main.py
 
-from cmath import e
 import dotenv
 
 from spotify_wrapper import SpotifyWrapper
@@ -23,7 +22,7 @@ def import_playlist():
         playlist_url,
     )
 
-    if px.does_playlist_exist():
+    if px.does_playlist_exist(playlist_name=playlist_name):
         print("Playlist already exists in Plex, try updating instead")
     else:
         print(f"Importing {playlist_name} from Spotify...")

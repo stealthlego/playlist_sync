@@ -51,3 +51,10 @@ class PlexWrapper:
     def create_playlist(self, playlist_name, tracks: list) -> None:
         new_playlist = self.server.createPlaylist(title=playlist_name, items=tracks)
         print(new_playlist)
+
+    def does_playlist_exist(self, playlist_name: str) -> bool:
+        try:
+            if self.server.playlist(playlist_name):
+                return True
+        except NotFound:
+            return False
